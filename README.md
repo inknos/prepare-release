@@ -1,5 +1,7 @@
 # packit/prepare-release
 
+Fork for dnf5 specfile tweaks
+
 GitHub Action to prepare a new release, which includes:
 
 - generate a new changelog entry in `CHANGELOG.md`
