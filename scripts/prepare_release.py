@@ -1,11 +1,12 @@
 #!/usr/bin/python3
 
 import os
+import subprocess
+
 import click
 from pathlib import Path
 
 from git import Repo
-from changelog import get_changelog, get_relevant_commits
 from specfile import Specfile
 
 def cut_first_n_lines(path: str, n: int):
@@ -38,9 +39,18 @@ def prepare_release(version: str, specfile_path: str):
     repo_name = (
         os.getenv("GITHUB_REPOSITORY", "/").split("/")[1] or Path(repo.working_dir).name
     )
-    new_entry = get_changelog(get_relevant_commits(repo), repo_name)
     changelog_file = Path("CHANGELOG.md")
     current_changelog = changelog_file.read_text()
+
+    cmd_tag = ['git', 'tag','--sort=-committerdate']
+    previoustag = subprocess.Popen(cmd_tag, stdout=subprocess.PIPE).communicate()[0]
+    previoustag = previoustag.decode('utf8', 'strict').split('\n')[0]
+
+    cmd = ['git', 'log', '--format="- %s"', '...'+previoustag]
+    output = subprocess.Popen(cmd, stdout=subprocess.PIPE ).communicate()[0]
+    new_entry = output.decode('utf8', 'strict')
+    new_entry ='\n'.join([ item[1:-1] for item in new_entry.split('\n') ])
+
     changelog_file.write_text(f"# {version}\n\n{new_entry}\n{current_changelog}")
     for path in specfile_path.split(","):
         with Specfile(path, autosave=True) as specfile:
