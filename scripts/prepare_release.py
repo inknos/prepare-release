@@ -62,17 +62,19 @@ def prepare_release(version: str, specfile_path: str):
             )
         # fix specfile release field and version macros
         with Specfile(path, autosave=True) as specfile:
-            specfile.version = "%{project_version_major}.%{project_version_minor}.%{project_version_patch}"
-        cut_first_n_lines(path, 3)
-        prepend_line(path, "%global project_version_patch " + version.split(".")[2])
-        prepend_line(path, "%global project_version_minor " + version.split(".")[1])
-        prepend_line(path, "%global project_version_major " + version.split(".")[0])
+            specfile.version = "%{project_version_prime}.%{project_version_major}.%{project_version_minor}.%{project_version_patch}"
+        cut_first_n_lines(path, 4)
+        prepend_line(path, "%global project_version_patch " + version.split(".")[3])
+        prepend_line(path, "%global project_version_minor " + version.split(".")[2])
+        prepend_line(path, "%global project_version_major " + version.split(".")[1])
+        prepend_line(path, "%global project_version_prime " + version.split(".")[0])
 
         version_file = "VERSION.cmake"
-        cut_first_n_lines(version_file, 3)
-        prepend_line(version_file, "set(DEFAULT_PROJECT_VERSION_PATCH " + version.split(".")[2]+ ")")
-        prepend_line(version_file, "set(DEFAULT_PROJECT_VERSION_MINOR " + version.split(".")[1]+ ")")
-        prepend_line(version_file, "set(DEFAULT_PROJECT_VERSION_MAJOR " + version.split(".")[0]+ ")")
+        cut_first_n_lines(version_file, 4)
+        prepend_line(version_file, "set(DEFAULT_PROJECT_VERSION_PATCH " + version.split(".")[3]+ ")")
+        prepend_line(version_file, "set(DEFAULT_PROJECT_VERSION_MINOR " + version.split(".")[2]+ ")")
+        prepend_line(version_file, "set(DEFAULT_PROJECT_VERSION_MAJOR " + version.split(".")[1]+ ")")
+        prepend_line(version_file, "set(DEFAULT_PROJECT_VERSION_PRIME " + version.split(".")[0]+ ")")
 
 if __name__ == "__main__":
     prepare_release()
